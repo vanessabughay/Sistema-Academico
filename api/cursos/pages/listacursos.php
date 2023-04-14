@@ -5,7 +5,7 @@ header('Content-Type: application/json; charset=UTF-8');
 
 
 include_once $_SERVER['DOCUMENT_ROOT'] . '/Sistema-Academico/api/config/database.php';
-include_once $_SERVER['DOCUMENT_ROOT'] . '/Sistema-Academico/api/controller/Curso.php';
+include_once $_SERVER['DOCUMENT_ROOT'] . '/Sistema-Academico/api/controller/Repository.php';
 
 
 
@@ -13,9 +13,9 @@ $database = new Database();
 $db = $database->getConnection();
 
 
-$cursos = new ListaCursos($db);
+$cursos = new QueryBuilder($db, Curso::class);
 $page = $_GET['page'];
-$list = $cursos->read($page);
+$list = $cursos->list($page)->execute();
 $total = $cursos->total();
 if ($list->rowCount() > 0) {
 
