@@ -4,8 +4,8 @@ header('Acess-Control-Allow-Origin: *');
 header('Content-Type: application/json; charset=UTF-8');
 
 
-include_once $_SERVER['DOCUMENT_ROOT'] . '/vsc/api/config/database.php';
-include_once $_SERVER['DOCUMENT_ROOT'] . '/vsc/api/controller/Curso.php';
+include_once $_SERVER['DOCUMENT_ROOT'] . '/Sistema-Academico/api/config/database.php';
+include_once $_SERVER['DOCUMENT_ROOT'] . '/Sistema-Academico/api/controller/Curso.php';
 
 
 
@@ -31,7 +31,7 @@ if ($list->rowCount() > 0) {
     array(
       "type" => "danger",
       "title" => "Failed",
-      "message" => "No records Found",
+      "message" => "No records to be Found",
     )
   );
 }

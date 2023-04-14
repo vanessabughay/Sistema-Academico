@@ -1,7 +1,7 @@
 <?php
 
 
-include_once $_SERVER['DOCUMENT_ROOT'] . '/vsc/api/config/models.php';
+include_once $_SERVER['DOCUMENT_ROOT'] . '/Sistema-Academico/api/config/models.php';
 
 class ListaCursos extends Databasenames
 {
