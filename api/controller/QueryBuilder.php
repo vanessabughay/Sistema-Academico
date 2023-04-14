@@ -10,6 +10,7 @@ class QueryBuilder
   private \ReflectionClass $reflector;
   private $table_name;
   private $joins = [];
+  private $toSelect =[];
   private $conditions = [];
 
   public function __construct($db, $class)
@@ -27,10 +28,18 @@ class QueryBuilder
       case('LEFT'): $join_type = "LEFT"; break;
     }
     $table = $join['table'];
-    $as = $join['as'] ?? "";
+    $tableReflector = new \ReflectionClass($table);
+    $table_name = $tableReflector->getDefaultProperties()['table_name'];
     $on = $join['on'];
-    array_push($this->joins, $join_type." JOIN ".$table." as ".$as." on ".$on);
-    
+    $properties = $tableReflector->getProperties();
+    $arr = [];
+    foreach($properties as $property) {
+      if($property->getType()->getName() == 'string' && $property->name !== 'table_name'){
+        array_push($arr, $table_name.".".$property->name." as ".$tableReflector->name."_".$property->name);
+      }
+    }
+    array_push($this->joins, $join_type." JOIN ".$table_name." on ".$on);
+    $this->query = str_replace("SELECT", "SELECT ".implode(", ", $arr). ", ", $this->query);
     return $this;
   }
 
@@ -68,7 +77,15 @@ class QueryBuilder
   }
   public function findOne()
   {
-    $this->query = "SELECT * from " . $this->table_name;
+    $properties = $this->reflector->getProperties();
+    $arr = [];
+    foreach($properties as $property) {
+      if($property->getType()->getName() !== 'array'&& $property->name !== 'table_name'){
+        array_push($arr, $this->table_name.".".$property->name." as ".$this->reflector->name."_".$property->name);
+      }
+    }
+    $this->toSelect = implode(", ",$arr);
+    $this->query = "SELECT ".$this->toSelect." from " . $this->table_name;
     return $this;
   }
 

@@ -11,11 +11,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/Sistema-Academico/api/controller/Quer
 $database = new Database();
 $db = $database->getConnection();
 
-$join = ['table' => 'sistema_academico.disciplinas', 'as' => 'disc', 'on' => 'disc.curso = sistema_academico.cursos.codigo'];
+$join = ['table' => 'Disciplina', 'as' => 'disc', 'on' => 'sistema_academico.disciplinas.curso = sistema_academico.cursos.codigo'];
 $where = ['codigo'=> 1];
 $cursos = new QueryBuilder($db, Curso::class);
 
-$list = $cursos->findOne()->where('Curso_codigo = :codigo', $where)->leftJoin($join)->execute();
+$list = $cursos->findOne()->where('sistema_academico.cursos.codigo = :codigo', $where)->leftJoin($join)->execute();
 if ($list->rowCount() > 0) {
 
   http_response_code(200);
