@@ -11,6 +11,7 @@ nome_social varchar(40),
 genero varchar(1) not null,
 curso bigint not null,
 ano smallint,
+periodo smallint,
 nascimento date,
 ativo bool not null default 1,
 foreign key (curso) references sistema_academico.cursos(codigo)
