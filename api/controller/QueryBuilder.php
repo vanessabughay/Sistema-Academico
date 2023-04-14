@@ -9,9 +9,8 @@ class QueryBuilder
   private $query = "";
   private \ReflectionClass $reflector;
   private $table_name;
+  private $joins = [];
   private $conditions = [];
-
-
 
   public function __construct($db, $class)
   {
@@ -20,10 +19,34 @@ class QueryBuilder
     $this->table_name = $this->reflector->getDefaultProperties()['table_name'];
   }
 
+  private function join($join, string $type = null)
+  {
+    $join_type = "";
+    switch($type){
+      default: $join_type = "INNER"; break;
+      case('LEFT'): $join_type = "LEFT"; break;
+    }
+    $table = $join['table'];
+    $as = $join['as'] ?? "";
+    $on = $join['on'];
+    array_push($this->joins, $join_type." JOIN ".$table." as ".$as." on ".$on);
+    
+    return $this;
+  }
+
+  public function innerJoin($join){
+    return $this->join($join);
+  }
+
+  public function leftJoin($join){
+    return $this->join($join, 'LEFT');
+  }
+
   public function execute()
   {
     $toWhere =  implode(" ", $this->conditions);
-    $this->query = $this->query . " " . $toWhere . ";";
+    $toJoin = implode(" ", $this->joins);
+    $this->query = $this->query . " " .$toJoin ." ".$toWhere . ";";
     echo $this->query;
     $statement = $this->conn->prepare($this->query);
     $statement->execute();
@@ -45,7 +68,8 @@ class QueryBuilder
   }
   public function findOne()
   {
-    $this->query = "SELECT from" . $this->table_name;
+    $this->query = "SELECT * from " . $this->table_name;
+    return $this;
   }
 
   function where(string $condition, $params)

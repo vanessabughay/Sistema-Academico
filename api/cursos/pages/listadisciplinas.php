@@ -11,11 +11,11 @@ include_once $_SERVER['DOCUMENT_ROOT'] . '/Sistema-Academico/api/controller/Quer
 $database = new Database();
 $db = $database->getConnection();
 
-
+$join = ['table' => 'sistema_academico.disciplinas', 'as' => 'disc', 'on' => 'disc.curso = sistema_academico.cursos.codigo'];
+$where = ['codigo'=> 1];
 $cursos = new QueryBuilder($db, Curso::class);
-$page = $_GET['page'];
-$list = $cursos->list($page)->execute();
-$total = $cursos->total()->execute();
+
+$list = $cursos->findOne()->where('Curso_codigo = :codigo', $where)->leftJoin($join)->execute();
 if ($list->rowCount() > 0) {
 
   http_response_code(200);
@@ -25,10 +25,6 @@ if ($list->rowCount() > 0) {
   while ($row = $list->fetch(PDO::FETCH_ASSOC)) {
     $e = $row;
     array_push($arr['response'], $e);
-  }
-  while ($row = $total->fetch(PDO::FETCH_ASSOC)) {
-    $e = $row;
-    $arr['total'] = $e;
   }
   echo json_encode($arr);
 } else {
