@@ -10,6 +10,44 @@ class QueryBuilder
   private \ReflectionClass $reflector;
   private $table_name;
   private $conditions = [];
+
+
+
+  public function __construct($db, $class)
+  {
+    $this->conn = $db;
+    $this->reflector = new \ReflectionClass($class);
+    $this->table_name = $this->reflector->getDefaultProperties()['table_name'];
+  }
+
+  public function execute()
+  {
+    $toWhere =  implode(" ", $this->conditions);
+    $this->query = $this->query . " " . $toWhere . ";";
+    echo $this->query;
+    $statement = $this->conn->prepare($this->query);
+    $statement->execute();
+    return $statement;
+  }
+
+  public function list($page)
+  {
+    $this->query = "SELECT * from " .
+      $this->table_name . " order by nome asc limit 50 offset " .
+      50 * ($page - 1);
+    return $this;
+  }
+
+  public function total()
+  {
+    $this->query = "SELECT count(codigo) from " . $this->table_name;
+    return $this;
+  }
+  public function findOne()
+  {
+    $this->query = "SELECT from" . $this->table_name;
+  }
+
   function where(string $condition, $params)
   {
     foreach ($params as $key => $value) {
@@ -37,41 +75,6 @@ class QueryBuilder
     return $this;
   }
 
-  public function __construct($db, $class)
-  {
-    $this->conn = $db;
-    $this->reflector = new \ReflectionClass($class);
-    $this->table_name = $this->reflector->getDefaultProperties()['table_name'];
-  }
-
-  public function execute()
-  {
-    $toWhere =  implode(" ", $this->conditions);
-    $this->query = $this->query . " " . $toWhere;
-    echo $this->query;
-    $statement = $this->conn->prepare($this->query);
-    $statement->execute();
-    return $statement;
-  }
-
-  public function list($page)
-  {
-    $this->query = "SELECT * from " .
-      $this->table_name . " order by nome asc limit 50 offset " .
-      50 * ($page - 1);
-    return $this;
-  }
-
-  public function total()
-  {
-    $this->query = "SELECT count(codigo) from " . $this->table_name;
-    return $this;
-  }
-  public function findOne()
-  {
-    $this->query = "SELECT from" . $this->table_name;
-  }
-
   public function save($class, $type = null)
   {
     $rp = $this->reflector->getProperties();
@@ -80,7 +83,7 @@ class QueryBuilder
     $values = [];
     $update = [];
     foreach ($rp as $property) {
-      if ($property->isInitialized($class)) {
+      if ($property->isInitialized($class) && $property->name != "table_name") {
         $name = $property->name;
         $snakeName = $name;
         $nullValue = $class->$name != null ? (is_numeric($class->$name) ? "{$class->$name}" : "'{$class->$name}'") : "NULL";
@@ -93,10 +96,8 @@ class QueryBuilder
     switch ($type) {
       case ("INSERT"):
         $toSet = implode(", ", $set);
-        echo $toSet;
         $toValues = implode(", ", $values);
-        echo $toValues;
-        $this->query = "INSERT INTO {$className} SET {$toSet} VALUES {$toValues}";
+        $this->query = "INSERT INTO {$className} ({$toSet}) VALUES ({$toValues})";
         return $this;
       case ("UPDATE"):
         $toUpdate = implode(", ", $update);
@@ -106,15 +107,15 @@ class QueryBuilder
         $toSet = implode(", ", $set);
         $toValues = implode(", ", $values);
         $toUpdate = implode(", ", $update);
-        $this->query =  "INSERT INTO {$className} SET {$toSet} VALUES {$toValues} ON DUPLICATE KEY UPDATE {$className} SET {$toUpdate}";
+        $this->query =  "INSERT INTO {$className} ({$toSet}) VALUES ({$toValues}) ON DUPLICATE KEY UPDATE {$className} SET {$toUpdate}";
         return $this;
     }
   }
   public function delete()
   {
-    $className = $this->reflector->name;
-    $toWhere =  implode(" ", $this->conditions);
-    return "DELETE FROM {$className} {$toWhere}";
+    $className = $this->table_name;
+    $this->query = "DELETE FROM {$className}";
+    return $this;
   }
   public function insert($class)
   {

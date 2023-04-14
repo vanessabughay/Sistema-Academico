@@ -1,60 +1,65 @@
 <?php
 
 
-class Curso {
-  private string $codigo;
-  private string $nome;
-  private array $alunos;
-  private array $disciplinas;
-  private array $turmas;
-  private string $table_name = "sistema_academico.cursos";
+class Curso
+{
+  public string $codigo;
+  public string $nome;
+  public array $alunos;
+  public array $disciplinas;
+  public array $turmas;
+  public string $table_name = "sistema_academico.cursos";
 }
 
-class Aluno {
-  private string $matricula;
-  private string $nome;
-  private string $nome_social;
-  private string $sobrenome;
-  private string $genero;
-  private string $curso;
-  private Curso $cursoModel;
-  private string $nascimento;
-  private int $ano;
-  private int $periodo;
-  private bool $ativo;
-  private string $table_name = "sistema_academico.alunos";
-  private array $turmas;
+class Aluno
+{
+  public string $matricula;
+  public string $nome;
+  public string $nome_social;
+  public string $sobrenome;
+  public string $genero;
+  public string $curso;
+  public Curso $cursoModel;
+  public string $nascimento;
+  public int $ano;
+  public int $periodo;
+  public bool $ativo;
+  public string $table_name = "sistema_academico.alunos";
+  public array $turmas;
 }
 
-class Professor {
-  private string $matricula;
-  private string $nome;
-  private string $nome_social;
-  private string $sobrenome;
-  private string $genero;
-  private bool $ativo;
-  private string $table_name = "sistema_academico.professores";
+class Professor
+{
+  public string $matricula;
+  public string $nome;
+  public string $nome_social;
+  public string $sobrenome;
+  public string $genero;
+  public bool $ativo;
+  public string $table_name = "sistema_academico.professores";
 }
 
-class Disciplina {
-  private string $codigo;
-  private string $nome;
-  private string $ementa;
-  private string $curso;
-  private Curso $cursoModel;
-  private string $table_name = "sistema_academico.disciplinas";
+class Disciplina
+{
+  public string $codigo;
+  public string $nome;
+  public string $ementa;
+  public string $curso;
+  public Curso $cursoModel;
+  public string $table_name = "sistema_academico.disciplinas";
 }
-Class Turma {
-  private string $professor;
-  private Professor $professorModel;
-  private string $disciplina;
-  private Disciplina $disciplinaModel;
-  private array $alunos;
-  private int $ano;
-  private int $periodo;
-  private string $horario1;
-  private string $horario2;
-  private string $horaria3;
-  private string $horario4;
-  private string $table_name = "sistema_academico.turmas";
+class Turma
+{
+  public string $professor;
+  public Professor $professorModel;
+  public string $disciplina;
+  public Disciplina $disciplinaModel;
+  public array $alunos;
+  public int $ano;
+  public int $periodo;
+  public string $horario1;
+  public string $horario2;
+  public string $horaria3;
+  public string $horario4;
+  public string $table_name = "sistema_academico.turmas";
 }
